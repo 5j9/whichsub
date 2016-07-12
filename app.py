@@ -19,12 +19,19 @@ app = Flask(__name__)
 
 def find_sub_templates(lookingfor: str, page: pwb.Page):
     found_templates = []
+    if page.isRedirectPage():
+        page = page.getRedirectTarget()
     if lookingfor in page.text:
         found_templates.append(page)
+
     for sub_template in page.templates(content=True):
+        if sub_template.isRedirectPage():
+            sub_template = sub_template.getRedirectTarget()
         if lookingfor in sub_template.text:
             found_templates.append(sub_template)
-    return found_templates
+
+    # Remove duplicate templates
+    return {f.title(): f for f in found_templates}.values()
 
 
 @app.route('/' if os_name != 'posix' else '/whichsub/')
