@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>
+      WhichSub?
+    </title>
+  </head>
+  <body>
+    <form action="">
+        <fieldset>
+            Code:<br>
+            <input type="text" name="code" value="{{ code }}"><br>
+            Family:<br>
+            <input type="text" name="family" value="{{ family }}"><br>
+            Page title:<br>
+            <input type="text" name="pagetitle" value="{{ pagetitle }}" autofocus><br>
+            Looking for:<br>
+            <input type="text" name="lookingfor" value="{{ lookingfor }}"><br>
+            <input type="submit" value="Submit">
+        </fieldset>
+    </form>
+    <br>
+    {% if templates %}
+    Found templates:
+    <ol>
+    {% for template in templates %}
+        <li>
+            <a href="{{ template.full_url() }}">{{ template.title()|e }}</a>
+            (<a href="{{ template.full_url() }}?&action=edit">edit</a>)
+            (<a href="{{ template.full_url() }}?&action=history">history</a>)
+        </li>
+    {% endfor %}
+    </ol>
+    {% endif %}
+  </body>
+</html>
