@@ -41,12 +41,28 @@ def main():
     family = args.get('family', 'wikipedia')
     pagetitle = args.get('pagetitle', '')
     lookingfor = args.get('lookingfor', '')
-    site = pwb.Site(code, family)
+
     try:
-        page = pwb.Page(site, pagetitle)
-        templates = find_sub_templates(lookingfor, page)
-    except ValueError:
+        site = pwb.Site(code, family)
+    except pwb.exceptions.UnknownFamily:
+        family = 'UnknownFamily'
         templates = None
+    except pwb.exceptions.UnknownSite:
+        code = 'UnknownSite'
+        templates = None
+    else:
+        try:
+            page = pwb.Page(site, pagetitle)
+        except ValueError:
+            # if not pagetitle:
+            templates = None
+        else:
+            try:
+                templates = find_sub_templates(lookingfor, page)
+            except pwb.exceptions.InvalidTitle:
+                pagetitle = 'InvalidTitle'
+                templates = None
+
     return render_template(
         'main.html',
         code=code,
