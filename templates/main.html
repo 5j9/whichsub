@@ -21,16 +21,18 @@
     </form>
     <br>
     {% if templates %}
-    Found templates:
-    <ol>
-    {% for template in templates %}
-        <li>
-            <a href="{{ template.full_url() }}">{{ template.title()|e }}</a>
-            (<a href="{{ template.full_url() }}?&action=edit">edit</a>)
-            (<a href="{{ template.full_url() }}?&action=history">history</a>)
-        </li>
-    {% endfor %}
-    </ol>
+        Found templates:
+        <ol>
+        {% for template in templates %}
+            <li>
+                <a href="{{ template.full_url() }}">{{ template.title()|e }}</a>
+                (<a href="{{ template.full_url() }}?&action=edit">edit</a>)
+                (<a href="{{ template.full_url() }}?&action=history">history</a>)
+            </li>
+        {% endfor %}
+        </ol>
+    {% elif templates is not none %}
+         No Results Found.
     {% endif %}
   </body>
 </html>
