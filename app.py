@@ -34,12 +34,13 @@ def find_sub_templates(lookingfor: str, page: pwb.Page):
     return {f.title(): f for f in found_templates}.values()
 
 
-@app.route('/' if os_name != 'posix' else '/whichsub/')
+@app.route('/')
 def main():
-    code = request.args.get('code', 'en')
-    family = request.args.get('family', 'wikipedia')
-    pagetitle = request.args.get('pagetitle', '')
-    lookingfor = request.args.get('lookingfor', '')
+    args = request.args
+    code = args.get('code', 'en')
+    family = args.get('family', 'wikipedia')
+    pagetitle = args.get('pagetitle', '')
+    lookingfor = args.get('lookingfor', '')
     site = pwb.Site(code, family)
     try:
         page = pwb.Page(site, pagetitle)
