@@ -18,6 +18,7 @@
             <input type="text" name="lookingfor" value="{{ lookingfor }}"><br>
             <input type="checkbox" name="wholeword" {{ 'checked' if wholeword else '' }}>Match whole word only<br>
             <input type="checkbox" name="matchcase" {{ '' if not matchcase else 'checked' }}>Match case<br>
+            <input type="hidden" name="matchcase"/>
             <input type="submit" value="Submit">
         </fieldset>
     </form>

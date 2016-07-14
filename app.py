@@ -57,7 +57,7 @@ def main():
     pagetitle = args.get('pagetitle', '')
     lookingfor = args.get('lookingfor', '')
     wholeword = bool(args.get('wholeword', False))
-    matchcase = bool(args.get('matchcase', False))
+    matchcase = bool(args.get('matchcase', True))
 
     try:
         site = pwb.Site(code, family)
