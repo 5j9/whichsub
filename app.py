@@ -1,10 +1,11 @@
 ﻿#!/data/project/whichsub/www/python/venv/bin/python
 # -*- coding: utf-8 -*-
 
-"""Find which subtemplates contain the given text."""
+"""Find which sub-templates contain the given text."""
 
 
 from os import name as os_name
+import re
 
 from flask import Flask
 from flask import request
@@ -17,17 +18,31 @@ if os_name == 'posix':
 app = Flask(__name__)
 
 
-def find_sub_templates(lookingfor: str, page: pwb.Page):
+def find_sub_templates(
+        lookingfor: str, page: pwb.Page, wholeword: bool, matchcase: bool
+):
     found_templates = []
     if page.isRedirectPage():
         page = page.getRedirectTarget()
-    if lookingfor in page.text:
+    pagetext = page.text
+    if not matchcase:
+        pagetext = pagetext.lower()
+        lookingfor = lookingfor.lower()
+    if wholeword:
+        pattern = re.compile(r'\b' + re.escape(lookingfor) + r'\b')
+        if pattern.search(pagetext):
+            found_templates.append(page)
+    elif lookingfor in pagetext:
         found_templates.append(page)
 
     for sub_template in page.templates(content=True):
         if sub_template.isRedirectPage():
             sub_template = sub_template.getRedirectTarget()
-        if lookingfor in sub_template.text:
+        text = sub_template.text if matchcase else sub_template.text.lower()
+        if wholeword:
+            if pattern.search(text):
+                found_templates.append(sub_template)
+        elif lookingfor in text:
             found_templates.append(sub_template)
 
     # Remove duplicate templates
@@ -41,6 +56,8 @@ def main():
     family = args.get('family', 'wikipedia')
     pagetitle = args.get('pagetitle', '')
     lookingfor = args.get('lookingfor', '')
+    wholeword = bool(args.get('wholeword', False))
+    matchcase = bool(args.get('matchcase', False))
 
     try:
         site = pwb.Site(code, family)
@@ -54,11 +71,13 @@ def main():
         try:
             page = pwb.Page(site, pagetitle)
         except ValueError:
-            # if not pagetitle:
+            # when not pagetitle
             templates = None
         else:
             try:
-                templates = find_sub_templates(lookingfor, page)
+                templates = find_sub_templates(
+                    lookingfor, page, wholeword, matchcase
+                )
             except pwb.exceptions.InvalidTitle:
                 pagetitle = 'InvalidTitle'
                 templates = None
@@ -70,6 +89,8 @@ def main():
         pagetitle=pagetitle,
         lookingfor=lookingfor,
         templates=templates,
+        wholeword=wholeword,
+        matchcase=matchcase
     )
 
 
