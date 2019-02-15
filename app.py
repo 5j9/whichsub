@@ -3,23 +3,21 @@
 
 """Find which sub-templates contain the given text."""
 
-
-from os import name as os_name
 import re
 
 from flask import Flask
 from flask import request
 from flask import render_template
-import pywikibot as pwb
-if os_name == 'posix':
-    from flup.server.fcgi import WSGIServer
+
+from pywikibot import Site, Page
+from pywikibot.exceptions import UnknownFamily, UnknownSite, InvalidTitle
 
 
 app = Flask(__name__)
 
 
 def find_sub_templates(
-        lookingfor: str, page: pwb.Page, wholeword: bool, matchcase: bool
+    lookingfor: str, page: Page, wholeword: bool, matchcase: bool
 ):
     found_templates = []
     if page.isRedirectPage():
@@ -60,16 +58,16 @@ def main():
     matchcase = bool(args.get('matchcase', True))
 
     try:
-        site = pwb.Site(code, family)
-    except pwb.exceptions.UnknownFamily:
+        site = Site(code, family)
+    except UnknownFamily:
         family = 'UnknownFamily'
         templates = None
-    except pwb.exceptions.UnknownSite:
+    except UnknownSite:
         code = 'UnknownSite'
         templates = None
     else:
         try:
-            page = pwb.Page(site, pagetitle)
+            page = Page(site, pagetitle)
         except ValueError:
             # when not pagetitle
             templates = None
@@ -78,7 +76,7 @@ def main():
                 templates = find_sub_templates(
                     lookingfor, page, wholeword, matchcase
                 )
-            except pwb.exceptions.InvalidTitle:
+            except InvalidTitle:
                 pagetitle = 'InvalidTitle'
                 templates = None
 
@@ -95,7 +93,8 @@ def main():
 
 
 if __name__ == '__main__':
-    if os_name == 'posix':
+    try:
+        from flup.server.fcgi import WSGIServer
         WSGIServer(app).run()
-    else:
+    except ModuleNotFoundError:
         app.run(debug=True)
