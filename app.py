@@ -96,5 +96,5 @@ if __name__ == '__main__':
     try:
         from flup.server.fcgi import WSGIServer
         WSGIServer(app).run()
-    except ModuleNotFoundError:
+    except ImportError:
         app.run(debug=True)
