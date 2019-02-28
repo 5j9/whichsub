@@ -38,6 +38,7 @@ def find_sub_templates(
             sub_template = sub_template.getRedirectTarget()
         text = sub_template.text if matchcase else sub_template.text.lower()
         if wholeword:
+            # noinspection PyUnboundLocalVariable
             if pattern.search(text):
                 found_templates.append(sub_template)
         elif lookingfor in text:
