@@ -1,6 +1,6 @@
 from os import unlink, chdir
 from os.path import expanduser
-from subprocess import check_call, DEVNULL, CalledProcessError
+from subprocess import check_call, CalledProcessError
 
 
 HOME = expanduser('~')
