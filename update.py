@@ -1,5 +1,4 @@
-from shutil import rmtree
-from os import unlink
+from os import unlink, chdir
 from os.path import expanduser
 from subprocess import check_call, DEVNULL, CalledProcessError
 
@@ -17,26 +16,8 @@ def main():
             'Please run this script from a container shell.\n'
             'Run: webservice --backend=kubernetes python shell')
 
-    check_call('webservice stop', shell=True, stderr=DEVNULL, stdout=DEVNULL)
-    check_call(
-        'webservice --backend=kubernetes stop',
-        shell=True, stderr=DEVNULL, stdout=DEVNULL)
-    try:
-        rmtree(HOME + '/www/python/venv')
-    except FileNotFoundError:
-        pass
-    check_call('python3 -m venv ~/www/python/venv', shell=True)
-
-    try:
-        rmtree(HOME + '/www/python/src')
-    except FileNotFoundError:
-        pass
-    check_call(
-        'git clone --depth=1'
-        ' https://github.com/5j9/whichsub.git'
-        ' ~/www/python/src',
-        shell=True)
-
+    chdir(HOME + '/www/python/src')
+    check_call('git pull', shell=True)
     check_call(
         '. ~/www/python/venv/bin/activate\n'
         'pip install --upgrade pip\n'
