@@ -53,8 +53,8 @@ def main():
     args = request.args
     code = args.get('code', 'en')
     family = args.get('family', 'wikipedia')
-    pagetitle = args.get('pagetitle', '')
-    lookingfor = args.get('lookingfor', '')
+    lookingfor = args.get('lookingfor') or ''
+    pagetitle = args.get('pagetitle') or ''
     wholeword = bool(args.get('wholeword', False))
     matchcase = bool(args.get('matchcase', True))
 
@@ -67,19 +67,20 @@ def main():
         code = 'UnknownSite'
         templates = None
     else:
-        try:
-            page = Page(site, pagetitle)
-        except ValueError:
-            # when not pagetitle
-            templates = None
-        else:
+        if lookingfor and pagetitle:
             try:
-                templates = find_sub_templates(
-                    lookingfor, page, wholeword, matchcase
-                )
-            except InvalidTitle:
-                pagetitle = 'InvalidTitle'
+                page = Page(site, pagetitle)
+            except ValueError:
                 templates = None
+            else:
+                try:
+                    templates = find_sub_templates(
+                        lookingfor, page, wholeword, matchcase)
+                except InvalidTitle:
+                    pagetitle = 'InvalidTitle'
+                    templates = None
+        else:
+            templates = None
 
     return render_template(
         'main.html',
@@ -89,8 +90,7 @@ def main():
         lookingfor=lookingfor,
         templates=templates,
         wholeword=wholeword,
-        matchcase=matchcase
-    )
+        matchcase=matchcase)
 
 
 if __name__ == '__main__':
