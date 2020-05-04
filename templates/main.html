@@ -13,9 +13,9 @@
             Family:<br>
             <input type="text" name="family" value="{{ family }}"><br>
             Page title:<br>
-            <input type="text" name="pagetitle" value="{{ pagetitle }}" autofocus style="width: 100%"><br>
+            <input type="text" name="pagetitle" value="{{ pagetitle }}" style="width: 100%"><br>
             Looking for:<br>
-            <input type="text" name="lookingfor" value="{{ lookingfor }}" style="width: 100%"><br>
+            <input type="text" name="lookingfor" value="{{ lookingfor }}" autofocus style="width: 100%"><br>
             <input type="checkbox" name="wholeword" {{ 'checked' if wholeword else '' }}>Match whole word only<br>
             <input type="checkbox" name="matchcase" {{ 'checked' if matchcase else '' }}>Match case<br>
             <input type="hidden" name="matchcase"/>
