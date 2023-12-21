@@ -1,17 +1,17 @@
-﻿#!/data/project/whichsub/www/python/venv/bin/python
+#!/data/project/whichsub/www/python/venv/bin/python
 # -*- coding: utf-8 -*-
 
 """Find which sub-templates contain the given text."""
 
 import re
 
-from flask import Flask
-from flask import request
-from flask import render_template
-
-from pywikibot import Site, Page
-from pywikibot.exceptions import UnknownFamily, UnknownSite, InvalidTitle
-
+from flask import Flask, render_template, request
+from pywikibot import Page, Site
+from pywikibot.exceptions import (
+    InvalidTitleError,
+    UnknownFamilyError,
+    UnknownSiteError,
+)
 
 app = Flask(__name__)
 
@@ -60,10 +60,10 @@ def main():
 
     try:
         site = Site(code, family)
-    except UnknownFamily:
+    except UnknownFamilyError:
         family = 'UnknownFamily'
         templates = None
-    except UnknownSite:
+    except UnknownSiteError:
         code = 'UnknownSite'
         templates = None
     else:
@@ -75,8 +75,9 @@ def main():
             else:
                 try:
                     templates = find_sub_templates(
-                        lookingfor, page, wholeword, matchcase)
-                except InvalidTitle:
+                        lookingfor, page, wholeword, matchcase
+                    )
+                except InvalidTitleError:
                     pagetitle = 'InvalidTitle'
                     templates = None
         else:
@@ -90,12 +91,14 @@ def main():
         lookingfor=lookingfor,
         templates=templates,
         wholeword=wholeword,
-        matchcase=matchcase)
+        matchcase=matchcase,
+    )
 
 
 if __name__ == '__main__':
     try:
         from flup.server.fcgi import WSGIServer
+
         WSGIServer(app).run()
     except ImportError:
         app.run(debug=True)
